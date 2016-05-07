@@ -16,7 +16,7 @@ user = str(uuid.uuid4())
 twopi = 2 * 3.14159656358
 
 #host = 'localhost'
-host = '52.39.228.28'
+host = '52.39.144.120'
 
 
 random.seed()
