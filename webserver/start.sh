@@ -6,7 +6,7 @@
 # so this is a bit unsafe 
 gunicorn \
    app \
-   -b 127.0.0.1:8000 \
+   -b 127.0.0.1:8001 \
 
 
 # now start nginx
