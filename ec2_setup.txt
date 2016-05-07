@@ -1,0 +1,7 @@
+sudo apt-get install python3-pip
+sudo apt-get install openssl
+sudo apt-get install nginx
+sudo pip3 install gunicorn
+sudo pip3 install falcon
+
+
