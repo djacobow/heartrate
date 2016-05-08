@@ -10,17 +10,28 @@ import time
 import calendar
 
 import serial_scan
+import server_push
 
-wave_size = 128 
-    
+defaults = {
+    'wave_size': 128,
+    'user_name': 'bob',
+    'serial_port': '/dev/ttyACM0',
+    'serial_speed': 115200,
+    'server' : {
+        'name': '52.34.85.6',
+        'port' :8000,
+        'use': True,
+    }
+}
+
 def getnow():
     return calendar.timegm(time.gmtime())
 
 heart_state = {
     'wave' : {
-        'size' : wave_size,
+        'size' : defaults['wave_size'],
         'curr' : 0,
-        'data' : [0] * wave_size,
+        'data' : [0] * defaults['wave_size'],
     },
     'bpm' : {
         'last' : 0,
@@ -34,8 +45,9 @@ heart_state = {
 
 def update(inbytes):
     instr = inbytes.decode('ascii')
+    rval = None
     if len(instr) > 1:
-        print("instr " + instr)
+        # print("instr " + instr)
         info_type = instr[0]
         number = int(instr[1:])
         if info_type == 'S':
@@ -50,11 +62,13 @@ def update(inbytes):
                 'last': getnow(),
                 'value': number,
             }
+            rval = number
         elif info_type == 'Q':
             heart_state['ibi'] = {
                 'last': getnow(),
                 'value': number,
             }
+    return rval
 
 
 class MyApp(QtGui.QMainWindow,gui_form.Ui_MainWindow):
@@ -65,15 +79,19 @@ class MyApp(QtGui.QMainWindow,gui_form.Ui_MainWindow):
         self.startButton.clicked.connect(self.start_scan)
         sertimer = self.sertimer = QtCore.QTimer()
         sertimer.timeout.connect(self.scan_tick)
-        sertimer.start(100)
         disptimer = self.disptimer = QtCore.QTimer()
         disptimer.timeout.connect(self.redisp)
-        disptimer.start(2000)
 
         self.QApp = QApp
         self.ser_scanner = None
-        self.nameLineEdit.insert(str(uuid.uuid4()))
-
+        self.server_pusher = None
+        self.nameLineEdit.insert(defaults['user_name'])
+        self.serialPortLineEdit.insert(defaults['serial_port'])
+        self.serverNameLineEdit.insert(defaults['server']['name'])
+        self.serverPortLineEdit.insert(str(defaults['server']['port']))
+        self.sendDataCheck.setChecked(defaults['server']['use'])
+        sertimer.start(100)
+        disptimer.start(2000)
 
     def quit(self):
         if self.ser_scanner is not None:
@@ -83,12 +101,26 @@ class MyApp(QtGui.QMainWindow,gui_form.Ui_MainWindow):
         if self.ser_scanner is not None:
             del self.ser_scanner
             self.ser_scanner = None
-        self.ser_scanner = serial_scan.SerialScanner('/dev/ttyACM0')
+        self.ser_scanner = serial_scan.SerialScanner(self.serialPortLineEdit.text(),defaults['serial_speed'])
+        if self.server_pusher is not None:
+            del self.server_pusher
+            self.server_pusher = None
+        self.server_pusher = server_push.ServerPusher(self.serverNameLineEdit.text(),int(self.serverPortLineEdit.text()),self.nameLineEdit.text())
+
     def scan_tick(self):
         if self.ser_scanner is not None:
             blobs = self.ser_scanner.scan()
             for blob in blobs:
-                update(blob)
+                new_bpm = update(blob)
+                if new_bpm is not None and self.sendDataCheck.isChecked():
+                    push_result = self.server_pusher.push({'bpm':new_bpm})
+                    self.serverStatusLabel.setText(push_result)
+                    if push_result == 'ok':
+                        self.serverStatusLabel.setStyleSheet("QLabel { color: green; }")
+                    elif push_result == 'fail':
+                        self.serverStatusLabel.setStyleSheet("QLabel { color: red; }")
+                    else:
+                        self.serverStatusLabel.setStyleSheet("QLabel { color: black; }")
     def redisp(self):
         now = getnow()
         age = now - heart_state['bpm']['last']
@@ -116,8 +148,8 @@ class MyApp(QtGui.QMainWindow,gui_form.Ui_MainWindow):
             if val < min_v:
                 min_v = val
 
-        print("max_v " + str(max_v) + " min_v " + str(min_v))
-        print("sc_width " + str(sc_width) + " sc_height" + str(sc_height))
+        # print("max_v " + str(max_v) + " min_v " + str(min_v))
+        # print("sc_width " + str(sc_width) + " sc_height" + str(sc_height))
         if max_v != min_v:           
             for idx in range(0, dt_len):
                 x_loc = int(float(sc_width) * float(idx) / float(dt_len))

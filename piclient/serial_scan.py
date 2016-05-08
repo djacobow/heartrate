@@ -24,6 +24,7 @@ class SerialScanner(object):
         res = []
         while self.ser.inWaiting():
             b = self.ser.read(1)
+            # print(b.decode('ascii'))
             if b == b'\r':
                 pass
             elif b == b'\n':

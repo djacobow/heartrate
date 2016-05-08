@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>772</width>
+    <height>642</height>
    </rect>
   </property>
   <property name="font">
@@ -19,126 +19,190 @@
    <string>Heartrate Monitor Demo</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QWidget" name="verticalLayoutWidget">
+   <widget class="QGraphicsView" name="graphicsView">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>180</y>
+      <width>741</width>
+      <height>191</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>110</y>
+      <width>111</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>36</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>BPM</string>
+    </property>
+   </widget>
+   <widget class="QLCDNumber" name="lcdNumber">
+    <property name="geometry">
+     <rect>
+      <x>330</x>
+      <y>10</y>
+      <width>421</width>
+      <height>154</height>
+     </rect>
+    </property>
+    <property name="numDigits">
+     <number>3</number>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="sendDataCheck">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>540</y>
+      <width>231</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Transmit to Server</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="exitButton">
+    <property name="geometry">
+     <rect>
+      <x>660</x>
+      <y>540</y>
+      <width>87</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Exit</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="startButton">
+    <property name="geometry">
+     <rect>
+      <x>480</x>
+      <y>540</y>
+      <width>161</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Connect to Ard</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>12</y>
-      <width>761</width>
-      <height>481</height>
+      <y>390</y>
+      <width>116</width>
+      <height>41</height>
      </rect>
     </property>
-    <layout class="QVBoxLayout" name="verticalLayout">
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <item>
-        <widget class="QLabel" name="label_2">
-         <property name="text">
-          <string>Heartrate BPM</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLCDNumber" name="lcdNumber"/>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <widget class="QFrame" name="frame">
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
-       <widget class="QGraphicsView" name="graphicsView">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>10</y>
-          <width>741</width>
-          <height>191</height>
-         </rect>
-        </property>
-       </widget>
-      </widget>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <item>
-        <widget class="QLabel" name="label_3">
-         <property name="text">
-          <string>Patient Name</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="nameLineEdit"/>
-       </item>
-       <item>
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>Server Target</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="urlLineEdit"/>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <widget class="QGroupBox" name="groupBox">
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-       <property name="title">
-        <string>Controls</string>
-       </property>
-       <widget class="QPushButton" name="startButton">
-        <property name="geometry">
-         <rect>
-          <x>526</x>
-          <y>0</y>
-          <width>121</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Connect to Ard</string>
-        </property>
-       </widget>
-       <widget class="QPushButton" name="exitButton">
-        <property name="geometry">
-         <rect>
-          <x>660</x>
-          <y>0</y>
-          <width>87</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Exit</string>
-        </property>
-       </widget>
-       <widget class="QCheckBox" name="sendDataCheck">
-        <property name="geometry">
-         <rect>
-          <x>368</x>
-          <y>0</y>
-          <width>131</width>
-          <height>22</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Send to Server</string>
-        </property>
-       </widget>
-      </widget>
-     </item>
-    </layout>
+    <property name="text">
+     <string>Patient Name</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>440</y>
+      <width>112</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Server Target</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="nameLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>390</y>
+      <width>601</width>
+      <height>33</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="serverNameLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>440</y>
+      <width>481</width>
+      <height>33</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="serialPortLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>490</y>
+      <width>601</width>
+      <height>33</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>490</y>
+      <width>112</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Serial Port</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="serverPortLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>640</x>
+      <y>440</y>
+      <width>111</width>
+      <height>33</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_5">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>540</y>
+      <width>141</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Server Contact:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="serverStatusLabel">
+    <property name="geometry">
+     <rect>
+      <x>360</x>
+      <y>540</y>
+      <width>58</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>n/a</string>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -146,7 +210,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>772</width>
      <height>33</height>
     </rect>
    </property>
