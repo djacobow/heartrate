@@ -31,12 +31,8 @@ heart_state = {
     'wave' : {
         'size' : defaults['wave_size'],
         'curr' : 0,
-<<<<<<< HEAD
         'data' : [0] * defaults['wave_size'],
-=======
-        'data' : [0] * wave_size,
-        'stable_data' : [0] * wave_size,
->>>>>>> 4cca1ebc1a1c76ee595d596a31043c6f2e546c8b
+        'stable_data' : [0] * defaults['wave_size'],
     },
     'bpm' : {
         'last' : 0,
