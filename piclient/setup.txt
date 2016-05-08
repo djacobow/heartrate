@@ -1,0 +1,25 @@
+##
+## Stuff to do to set up the Pi for development and running
+## this client
+##
+
+# might do this in advance to uSD card
+ >> download NOOBS
+ >> copy to uSD card
+ >> hookup
+ >> run NOOBS
+ >> install Raspbian
+ >> boot Raspbian
+ >> set to US keyboard
+
+
+>>> set up wifi, upper right hand corner
+
+$ sudo apt-get update
+$ sudo apt-get upgrade
+$ sudo apt-get install arduino
+$ sudo apt-get intall vim
+$ sudo apt-get install python3-pyqt4
+$ sudo apt-get install qt4-designer
+$ sudo apt-get install pyqt4-dev-tools
+

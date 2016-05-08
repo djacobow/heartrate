@@ -8,7 +8,7 @@ import gui_form
 import uuid
 import time
 import calendar
-
+import copy
 import serial_scan
 import server_push
 
@@ -31,7 +31,12 @@ heart_state = {
     'wave' : {
         'size' : defaults['wave_size'],
         'curr' : 0,
+<<<<<<< HEAD
         'data' : [0] * defaults['wave_size'],
+=======
+        'data' : [0] * wave_size,
+        'stable_data' : [0] * wave_size,
+>>>>>>> 4cca1ebc1a1c76ee595d596a31043c6f2e546c8b
     },
     'bpm' : {
         'last' : 0,
@@ -56,6 +61,7 @@ def update(inbytes):
             curr += 1
             if curr >= heart_state['wave']['size']:
                 curr = 0
+                heart_state['wave']['stable_data'] = copy.copy(heart_state['wave']['data'])
             heart_state['wave']['curr'] = curr
         elif info_type == 'B':
             heart_state['bpm'] = {
@@ -134,15 +140,15 @@ class MyApp(QtGui.QMainWindow,gui_form.Ui_MainWindow):
     def draw_wave(self):
         gv = self.graphicsView
         scene = QtGui.QGraphicsScene(gv)
-        sc_height = 190 #scene.height()
-        sc_width  = 740 #scene.width()
+        sc_height = 150 #scene.height()
+        sc_width  = 720 #scene.width()
         dt_len = len(heart_state['wave']['data'])
-        max_v = heart_state['wave']['data'][0]
-        min_v = heart_state['wave']['data'][0]
+        max_v = heart_state['wave']['stable_data'][0]
+        min_v = heart_state['wave']['stable_data'][0]
         last_x_loc = -1
         last_y_loc = -1
         for idx in range(0, dt_len):
-            val = heart_state['wave']['data'][idx]
+            val = heart_state['wave']['stable_data'][idx]
             if val > max_v:
                 max_v = val
             if val < min_v:
@@ -152,12 +158,12 @@ class MyApp(QtGui.QMainWindow,gui_form.Ui_MainWindow):
         # print("sc_width " + str(sc_width) + " sc_height" + str(sc_height))
         if max_v != min_v:           
             for idx in range(0, dt_len):
-                x_loc = int(float(sc_width) * float(idx) / float(dt_len))
-                val = heart_state['wave']['data'][idx]
-                y_loc = int(float(sc_height) *
-                            (float(val) - float(min_v)) /
-                            (float(max_v) - float(min_v))
-                           )
+                x_loc = 10 + int(float(sc_width) * float(idx) / float(dt_len))
+                val = heart_state['wave']['stable_data'][idx]
+                y_loc = 0 + int(float(sc_height) *
+                             (float(val) - float(min_v)) /
+                             (float(max_v) - float(min_v))
+                            )
                 if last_x_loc >= 0:
                     line = QtGui.QGraphicsLineItem(last_x_loc,last_y_loc,x_loc,y_loc)
                     # print("idx " + str(idx) + " xl " + str(x_loc) + " yl " + str(y_loc))
