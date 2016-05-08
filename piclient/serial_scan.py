@@ -13,21 +13,25 @@ class SerialScanner(object):
             stopbits = serial.STOPBITS_ONE,
             bytesize = serial.EIGHTBITS,
         )
+        if ser.isOpen():
+            print("Serial is open.");
         self.ser = ser
 
     def __exit__(self):
         self.ser.close()
 
     def scan(self):
-        if self.ser.inWaiting():
+        res = []
+        while self.ser.inWaiting():
             b = self.ser.read(1)
             if b == b'\r':
                 pass
             elif b == b'\n':
                 self.out = self.line
                 self.line = b''
-                return self.out
+                res.append(self.out)
             else:
                 self.line += b
-        return None
+        return res
+ 
     
