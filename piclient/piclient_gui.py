@@ -8,6 +8,7 @@ import uuid
 import time
 import calendar
 import copy
+
 from lib.gui    import gui_form
 from lib.serial import scan 
 from lib.server import push 
@@ -44,32 +45,30 @@ heart_state = {
     },
 }
 
-def update(inbytes):
-    instr = inbytes.decode('ascii')
-    rval = None
-    if len(instr) > 1:
-        # print("instr " + instr)
-        info_type = instr[0]
-        number = int(instr[1:])
-        if info_type == 'S':
-            curr = heart_state['wave']['curr']
-            heart_state['wave']['data'][curr] = number
-            curr += 1
-            if curr >= heart_state['wave']['size']:
-                curr = 0
-                heart_state['wave']['stable_data'] = copy.copy(heart_state['wave']['data'])
-            heart_state['wave']['curr'] = curr
-        elif info_type == 'B':
-            heart_state['bpm'] = {
-                'last': getnow(),
-                'value': number,
-            }
-            rval = number
-        elif info_type == 'Q':
-            heart_state['ibi'] = {
-                'last': getnow(),
-                'value': number,
-            }
+def update(datum):
+    datum_type = datum['type']
+    datum_val  = datum['value']
+
+    if datum_type == 'S':
+        curr = heart_state['wave']['curr']
+        heart_state['wave']['data'][curr] = datum_val
+        curr += 1
+        if curr >= heart_state['wave']['size']:
+            curr = 0
+            heart_state['wave']['stable_data'] = copy.copy(heart_state['wave']['data'])
+        heart_state['wave']['curr'] = curr
+    elif datum_type == 'B':
+        heart_state['bpm'] = {
+            'last': getnow(),
+            'value': datum_val,
+        }
+        rval = datum_val
+    elif datum_type == 'Q':
+        heart_state['ibi'] = {
+            'last': getnow(),
+            'value': datum_val,
+        }
+
     return rval
 
 
@@ -85,8 +84,8 @@ class MyApp(QtGui.QMainWindow,gui_form.Ui_MainWindow):
         disptimer.timeout.connect(self.redisp)
 
         self.QApp = QApp
-        self.ser_scanner = None
-        self.server_pusher = None
+        self.serial_scanner = None
+        self.sender = None
         self.nameLineEdit.insert(defaults['user_name'])
         self.serialPortLineEdit.insert(defaults['serial_port'])
         self.serverNameLineEdit.insert(defaults['server']['name'])
@@ -96,33 +95,34 @@ class MyApp(QtGui.QMainWindow,gui_form.Ui_MainWindow):
         disptimer.start(2000)
 
     def quit(self):
-        if self.ser_scanner is not None:
-            del self.ser_scanner
+        if self.serial_scanner is not None:
+            del self.serial_scanner
         self.QApp.quit()
     def start_scan(self):
-        if self.ser_scanner is not None:
-            del self.ser_scanner
-            self.ser_scanner = None
-        self.ser_scanner = scan.SerialScanner(self.serialPortLineEdit.text(),defaults['serial_speed'])
-        if self.server_pusher is not None:
-            del self.server_pusher
-            self.server_pusher = None
-        self.server_pusher = push.ServerPusher(self.serverNameLineEdit.text(),int(self.serverPortLineEdit.text()),self.nameLineEdit.text())
+        if self.serial_scanner is not None:
+            del self.serial_scanner
+            self.serial_scanner = None
+        self.serial_scanner = scan.SerialScanner(self.serialPortLineEdit.text(),defaults['serial_speed'])
+        if self.sender is not None:
+            del self.sender
+            self.sender = None
+        self.sender = push.ServerPusher(self.serverNameLineEdit.text(),int(self.serverPortLineEdit.text()),self.nameLineEdit.text())
 
     def scan_tick(self):
-        if self.ser_scanner is not None:
-            blobs = self.ser_scanner.scan()
-            for blob in blobs:
-                new_bpm = update(blob)
+        if self.serial_scanner is not None:
+            datas = self.serial_scanner.scan()
+            for datum in datas:
+                new_bpm = update(datum)
                 if new_bpm is not None and self.sendDataCheck.isChecked():
-                    push_result = self.server_pusher.push({'bpm':new_bpm})
+                    push_result = self.sender.push({'bpm':new_bpm})
                     self.serverStatusLabel.setText(push_result)
+                    newcolor = 'black'
                     if push_result == 'ok':
-                        self.serverStatusLabel.setStyleSheet("QLabel { color: green; }")
+                        newcolor = 'green'
                     elif push_result == 'fail':
-                        self.serverStatusLabel.setStyleSheet("QLabel { color: red; }")
-                    else:
-                        self.serverStatusLabel.setStyleSheet("QLabel { color: black; }")
+                        newcolor = 'red'
+                    self.serverStatusLabel.setStyleSheet("QLabel {{ color: {}; }}".format(new_color))
+
     def redisp(self):
         now = getnow()
         age = now - heart_state['bpm']['last']
@@ -169,7 +169,6 @@ class MyApp(QtGui.QMainWindow,gui_form.Ui_MainWindow):
                     
         gv.setScene(scene)
         gv.show()
-
 
 
 
