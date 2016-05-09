@@ -5,7 +5,6 @@ import serial
 class SerialScanner(object):
     def __init__(self,port,speed=115200):
         self.line = b''
-        self.out = b''
         ser = serial.Serial(
             port = port,
             baudrate = speed,
@@ -20,19 +19,38 @@ class SerialScanner(object):
     def __exit__(self):
         self.ser.close()
 
+    def bytes2data(self, inbytes):
+        instr = inbytes.decode('ascii')
+        rv = None
+        if len(instr) > 1:
+            info_type = instr[0]
+            info_num = int(instr[1:])
+            rv = { 
+                'type': info_type,
+                'value': info_num,
+            }
+        return rv
+
     def scan(self):
-        res = []
+        lines = []
         while self.ser.inWaiting():
             b = self.ser.read(1)
-            # print(b.decode('ascii'))
             if b == b'\r':
                 pass
             elif b == b'\n':
-                self.out = self.line
+                out = self.line
                 self.line = b''
-                res.append(self.out)
+                lines.append(out)
             else:
                 self.line += b
-        return res
+
+        return_list = []
+
+        for line in res:
+            decoded = self.bytes2data(line)
+            if decoded is not None:
+                return_list.append(decoded)
+
+        return return_list 
  
     
