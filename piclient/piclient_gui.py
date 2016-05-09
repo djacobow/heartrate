@@ -49,6 +49,7 @@ def update(datum):
     datum_type = datum['type']
     datum_val  = datum['value']
 
+    rval = None
     if datum_type == 'S':
         curr = heart_state['wave']['curr']
         heart_state['wave']['data'][curr] = datum_val
@@ -121,7 +122,7 @@ class MyApp(QtGui.QMainWindow,gui_form.Ui_MainWindow):
                         newcolor = 'green'
                     elif push_result == 'fail':
                         newcolor = 'red'
-                    self.serverStatusLabel.setStyleSheet("QLabel {{ color: {}; }}".format(new_color))
+                    self.serverStatusLabel.setStyleSheet("QLabel {{ color: {}; }}".format(newcolor))
 
     def redisp(self):
         now = getnow()

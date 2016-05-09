@@ -46,7 +46,7 @@ class SerialScanner(object):
 
         return_list = []
 
-        for line in res:
+        for line in lines:
             decoded = self.bytes2data(line)
             if decoded is not None:
                 return_list.append(decoded)

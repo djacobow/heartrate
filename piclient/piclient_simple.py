@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 
 import sys
 import datetime
@@ -33,6 +34,7 @@ def main():
     if config['todo']['log_heartrate']:
         try:
             logfile = open(config['logfilename'],'a')
+            logfile.write('time,heartrate\n')
         except:
             print('Could not open logfile.')
             return
@@ -62,8 +64,10 @@ def main():
                     logfile.write('{},{}\n'.format(time,bpm))
 
             if sender is not None:
-                if datum['type'] == 'b':
-                    sender.push({ 'bpm': datum['value'] })
+                if datum['type'] == 'B':
+                    push_res = sender.push({ 'bpm': datum['value'] })
+                    if push_res != 'ok':
+                        print(push_res)
                     
 
 if __name__ == '__main__':
