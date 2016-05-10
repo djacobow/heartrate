@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import serial
+from time import sleep
 
 class SerialScanner(object):
     def __init__(self,port,speed=115200):
@@ -13,6 +14,9 @@ class SerialScanner(object):
             bytesize = serial.EIGHTBITS,
         )
         if ser.isOpen():
+            ser.setDTR(False)
+            sleep(0.022)
+            ser.setDTR(True)
             print("Serial is open.");
         self.ser = ser
 
