@@ -1,3 +1,9 @@
+#ifndef _EMA_H
+#define _EMA_H
+
+#include <stdint.h>
+
+
 // This class implements a simple EMA filter. That is
 //
 // y[n] = a * x[n] + (1-a) * y[n-1]
@@ -65,8 +71,9 @@ class ema_c {
     return get();
   }
  private:
-  STORE_TYPE curr_avg;
+  volatile STORE_TYPE curr_avg;
 };
 
+#endif
 
 
