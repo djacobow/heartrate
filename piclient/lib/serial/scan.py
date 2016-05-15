@@ -24,7 +24,12 @@ class SerialScanner(object):
         rv = None
         if len(instr) > 1:
             info_type = instr[0]
-            info_num = int(instr[1:])
+            info_num = -1;
+            try:
+              info_num = int(instr[1:])
+            except:
+              print('decode err:' + instr)
+
             rv = { 
                 'type': info_type,
                 'value': info_num,

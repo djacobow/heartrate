@@ -69,6 +69,8 @@ def update(datum):
             'last': getnow(),
             'value': datum_val,
         }
+    else:
+        print(datum_type + ' ' + str(datum_val))
 
     return rval
 
