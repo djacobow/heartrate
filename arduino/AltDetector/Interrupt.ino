@@ -2,7 +2,7 @@
 const uint8_t SIG_TRAIL_LENGTH = 6;
 uint16_t sig_trailing[SIG_TRAIL_LENGTH];
 
-uint32_t last_beat = 0;
+uint32_t last_peak_time = 0;
 
 
 
@@ -13,7 +13,7 @@ void interruptSetup(){
   smooth1.init(Signal);
   maxfilt.init(Signal);
   minfilt.init(Signal);
-  last_beat = millis();
+  last_peak_time = millis();
   
   TCCR2A = 0x02;     // DISABLE PWM ON DIGITAL PINS 3 AND 11, AND GO INTO CTC MODE
   TCCR2B = 0x06;     // DON'T FORCE COMPARE, 256 PRESCALER 
@@ -21,6 +21,13 @@ void interruptSetup(){
   TIMSK2 = 0x02;     // ENABLE INTERRUPT ON MATCH BETWEEN TIMER2 AND OCR2A
   sei();             // MAKE SURE GLOBAL INTERRUPTS ARE ENABLED      
 } 
+
+
+bool started_trough = false;
+bool started_peak = true;
+
+uint32_t trough_time;
+uint32_t peak_time;
 
 
 // THIS IS THE TIMER 2 INTERRUPT SERVICE ROUTINE. 
@@ -45,20 +52,29 @@ ISR(TIMER2_COMPA_vect){                         // triggered when Timer2 counts 
   int currMax = maxfilt.get();
   int currMin = minfilt.get();
 
-  int span = currMax - currMin;
-  int top_thresh = currMax - (span / 4);
-  int bottom_thresh = currMin + (span / 4);
-  // bool new_beat = ((SmoothSignal <= bottom_thresh) && (sig_trailing[5] >= top_thresh));
-  bool new_beat = (SmoothSignal <= bottom_thresh);
+  uint16_t span = currMax - currMin;
+  uint16_t top_thresh = currMax - (span / 4);
+  uint16_t bottom_thresh = currMin + (span / 4);
   
-  uint32_t beat_length = now - last_beat;
-  new_beat &= (beat_length >= 240);
+  bool in_trough = SmoothSignal <= bottom_thresh;
+  bool in_peak   = SmoothSignal >= top_thresh;
   
-  if (new_beat) {
+  if (in_trough && !started_trough && started_peak) {
+    started_trough = true;
+    started_peak = false;
+    trough_time = now;
+    // Serial.println("trough start");    
+  } else if (in_peak && !started_peak && started_trough) {
+    // Serial.println("peak start");
+    started_peak = true;
+    started_trough = false;
+    uint32_t beat_length = now - last_peak_time;
+    last_peak_time = now;
+
     for (uint8_t i=IBI_TRAIL_LENGTH-1;i>0;i--) ibi_trailing[i] = ibi_trailing[i-1];
     ibi_trailing[0] = beat_length;
-    last_beat = now;
     QS = true;
+    
   }
 
   for (uint8_t i=SIG_TRAIL_LENGTH-1;i>0;i--) sig_trailing[i] = sig_trailing[i-1];

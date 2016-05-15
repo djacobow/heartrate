@@ -55,12 +55,15 @@ uint16_t calcbpm() {
    sum += ibi_trailing[i];
  } 
  uint32_t avg_ibi = sum / IBI_TRAIL_LENGTH;
- return (60 * 1000) / avg_ibi; 
+ // sendDataToProcessing('Q',avg_ibi);
+ return 60000UL / (uint32_t)avg_ibi; 
 }
 
 void loop(){
   // sendDataToProcessing('S', Signal);     // send Processing the raw Pulse Sensor data
   sendDataToProcessing('S', smooth1.get());     // send Processing the raw Pulse Sensor data
+
+#if 0  
   Serial.print("D");
   Serial.print(minfilt.get());
   Serial.print(",");
@@ -68,10 +71,12 @@ void loop(){
   Serial.print(",");
   Serial.print(maxfilt.get());
   Serial.println("");
-  
+#endif
+
   if (QS == true){                       // Quantified Self flag is true when arduino finds a heartbeat
         fadeRate = 255;                  // Set 'fadeRate' Variable to 255 to fade LED with pulse
-        sendDataToProcessing('B',calcbpm());   // send heart rate with a 'B' prefix
+        uint16_t bpm = calcbpm();
+        if (bpm < 300) sendDataToProcessing('B',bpm);
         QS = false;                      // reset the Quantified Self flag for next time    
      }
   
