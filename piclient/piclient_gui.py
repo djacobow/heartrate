@@ -163,7 +163,7 @@ class MyApp(QtGui.QMainWindow,gui_form.Ui_MainWindow):
             for idx in range(0, dt_len):
                 x_loc = 10 + int(float(sc_width) * float(idx) / float(dt_len))
                 val = heart_state['wave']['stable_data'][idx]
-                y_loc = 0 + int(float(sc_height) *
+                y_loc = float(sc_height) - int(float(sc_height) *
                              (float(val) - float(min_v)) /
                              (float(max_v) - float(min_v))
                             )
