@@ -8,6 +8,7 @@ import uuid
 import time
 import calendar
 import copy
+import math
 
 from lib.gui    import gui_form
 from lib.serial import scan 
@@ -63,12 +64,17 @@ def update(datum):
             'last': getnow(),
             'value': datum_val,
         }
-        rval = datum_val
+        # rval = datum_val
     elif datum_type == 'Q':
         heart_state['ibi'] = {
             'last': getnow(),
             'value': datum_val,
         }
+        rval = float(60000) / float(datum_val)
+        rounded = math.floor((rval * 10) + 0.5) / 10.0
+        print("BPM: " + str(rounded))
+    else:
+        print(datum_type + ' ' + str(datum_val))
 
     return rval
 
@@ -157,7 +163,7 @@ class MyApp(QtGui.QMainWindow,gui_form.Ui_MainWindow):
             for idx in range(0, dt_len):
                 x_loc = 10 + int(float(sc_width) * float(idx) / float(dt_len))
                 val = heart_state['wave']['stable_data'][idx]
-                y_loc = 0 + int(float(sc_height) *
+                y_loc = float(sc_height) - int(float(sc_height) *
                              (float(val) - float(min_v)) /
                              (float(max_v) - float(min_v))
                             )
