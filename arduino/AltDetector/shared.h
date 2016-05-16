@@ -4,13 +4,15 @@
 #include "ema.h"
 #include <stdint.h>
 
-const uint8_t IBI_TRAIL_LENGTH = 4;
-extern uint16_t ibi_trailing[IBI_TRAIL_LENGTH];
+extern bool first_ibi;
 extern ema_c<uint16_t,uint16_t,1,32> smooth1;
 extern ema_c<uint16_t,uint32_t,1,1024> maxfilt;
 extern ema_c<uint16_t,uint32_t,1,1024> minfilt;
+extern ema_c<uint16_t,uint16_t,1,4> ibiflt;
+
 extern volatile uint16_t Signal;  
-extern volatile bool QS;
+extern volatile bool pulse_ready;
+bool calcbpm(uint16_t &bpm, uint16_t &ibi);
 
 #endif
 

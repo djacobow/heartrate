@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 
+// March 2016, David Jacobowitz, david.jacobowitz@gmail.com
 
 // This class implements a simple EMA filter. That is
 //
@@ -16,7 +17,7 @@
 // Where both ALPHA < DENOM so that 0 < a < 1.
 //
 // However, to get the compiler to emit efficient code,
-// and particularly, code light free of multiplies, choose
+// and particularly, code light on multiplies, choose
 // ALPHA and DENOM that are powers of two, such as 1 and 256.
 //
 // Also, to get the compiler to use shifts instead of multiplies,
@@ -39,14 +40,13 @@ class ema_c {
  public:
   ema_c() { };
 
-  // not strictly necessary, but you can 'prime' the
-  // filter with the first sample
+  // primes the filter with a starting value
   void init(SAMP_TYPE sample) {
     curr_avg = sample * DENOM;
   }
 
   // call every time you have a new sample, returns the
-  // current average
+  // current filter out, eg, "trailing average"
   inline SAMP_TYPE update(SAMP_TYPE sample) {
     curr_avg = ((ALPHA * sample) +
 	        curr_avg - 
@@ -55,21 +55,36 @@ class ema_c {
     return get();
   }
 
+  // turn the current sample average without updating
   inline SAMP_TYPE get() { return (curr_avg / DENOM); }
-  inline SAMP_TYPE upmax(SAMP_TYPE sample, uint32_t ct) {
+  
+  // implements a biased updated that generates a kind of
+  // trailing maximum. If an input value is higher than the 
+  // current filter value, that becomes the new filter value,
+  // if it is lower, then it goes into the filter normally.
+  // This can be used to implement a "local" max function
+  // without needing to maintain a long array of trailing 
+  // values
+  inline SAMP_TYPE upmax(SAMP_TYPE sample) {
     if (sample > get()) {
-      for (uint32_t i=1;i<ct;i++) update(sample);
+      init(sample);
+    } else {
+      update(sample);
     }
-    update(sample);
     return get();
   }
-  inline SAMP_TYPE upmin(SAMP_TYPE sample, uint32_t ct) {
+  
+  
+  // same as above, but for minimums
+  inline SAMP_TYPE upmin(SAMP_TYPE sample) {
     if (sample < get()) {
-      for (uint32_t i=1;i<ct;i++) update(sample);
+      init(sample);
+    } else {
+      update(sample);
     }
-    update(sample);
     return get();
   }
+  
  private:
   volatile STORE_TYPE curr_avg;
 };
