@@ -8,6 +8,7 @@ import uuid
 import time
 import calendar
 import copy
+import math
 
 from lib.gui    import gui_form
 from lib.serial import scan 
@@ -63,12 +64,15 @@ def update(datum):
             'last': getnow(),
             'value': datum_val,
         }
-        rval = datum_val
+        # rval = datum_val
     elif datum_type == 'Q':
         heart_state['ibi'] = {
             'last': getnow(),
             'value': datum_val,
         }
+        rval = float(60000) / float(datum_val)
+        rounded = math.floor((rval * 10) + 0.5) / 10.0
+        print("BPM: " + str(rounded))
     else:
         print(datum_type + ' ' + str(datum_val))
 

@@ -2,6 +2,7 @@
 
 import sys
 import datetime
+import math
 
 from lib.serial import scan
 from lib.server import push
@@ -19,7 +20,8 @@ config = {
     'logfilename': 'heartrate.log',
     'todo': {
         'show_raw_decoded': False,
-        'show_heartrate': True,
+        'show_heartrate': False,
+        'show_better_heartrate': True,
         'log_heartrate': False,
         'send_heartrate': False,
     }
@@ -57,6 +59,11 @@ def main():
                     print('Heartrate is: ' + str(datum['value']) +
                             ' BPM')
 
+            if config['todo']['show_better_heartrate']:
+                if datum['type'] == 'Q':
+                    ibi = datum['value']
+                    hr = math.floor((600000.0 / float(ibi)) + 0.5) / 10.0;
+                    print('Fancy rate: ' + str(hr))
             if logfile is not None:
                 if datum['type'] == 'B':
                     time = datetime.datetime.now().isoformat()
