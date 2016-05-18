@@ -5,9 +5,14 @@ def get_now():
     return int(calendar.timegm(time.gmtime()))
 
 class SimpleDB(object):
-    def __init__(self,max_age=5*60):
+    def __init__(self,**kwargs):
+        self.max_age = 5 * 60
+        for name, value in kwargs.items():
+            if name == 'max_age':
+                self.max_age = value
         self._db = {}
-        self.max_age = max_age
+
+
     def del_old(self):
         now = get_now()
         to_del = []

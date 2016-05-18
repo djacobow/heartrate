@@ -6,8 +6,7 @@ import falcon
 import sqlite_db as dbwrap
 
 
-db = dbwrap.SimpleDB()
-
+db = dbwrap.SimpleDB(max_age = 5*60, filename='./demo_db.sqlite3')
 
 def slurp_and_parse(req):
     jsonbytes = b''
@@ -36,7 +35,7 @@ class MeasureOneClient(object):
             resp.status = falcon.HTTP_200
         else:
             resp.status = falcon.HTTP_404
-            resp.body = 'uh-oh'
+            resp.body = json.dumps({'error':'uh-oh'})
 
     def on_get(self, req, resp, userid):
         since = req.get_param_as_int('since',required=False)
