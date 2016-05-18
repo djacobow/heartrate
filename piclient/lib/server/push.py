@@ -1,4 +1,5 @@
 
+import ssl
 import http.client
 import json
 
@@ -9,7 +10,11 @@ class ServerPusher(object):
         self.url = '/api/v1/users/' + user
 
     def push(self,data):
-        conn = http.client.HTTPSConnection(self.name,self.port)
+        # workaround for the fact that the cert on my test server
+        # is self-signed and not matching to the hostname
+        ctx  = ssl.create_default_context(cafile='./davej.crt')
+        ctx.check_hostname = False
+        conn = http.client.HTTPSConnection(self.name,port=self.port,context=ctx)
         pdata = json.dumps(data)
         headers = { 'Content-type':'application/json'}
         rval = '???' 
