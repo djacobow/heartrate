@@ -3,6 +3,7 @@
 import math
 import time
 import os
+import ssl
 import http.client
 import json
 import uuid
@@ -34,9 +35,9 @@ while True:
     a1 += phase1
 
     while a0 > twopi:
-	    a0 -= twopi
+        a0 -= twopi
     while a1 > twopi:
-	    a1 -= twopi
+        a1 -= twopi
     v0 = 50 + 50 * math.sin(a0)
     v1 = 50 + 25 * math.cos(a1)
 
@@ -44,7 +45,10 @@ while True:
     if use_local_server:
         conn = http.client.HTTPConnection(host,8001)
     else:
-        conn = http.client.HTTPSConnection(host,8000)
+        # this is a workaround for my homemade key file(s)
+        ctx = ssl.create_default_context(cafile='./davej.crt')
+        ctx.check_hostname = False
+        conn = http.client.HTTPSConnection(host,port=8000,context=ctx)
 
     data = { 'var1': v0 };
     if tcount > 10 and tcount < 40:
