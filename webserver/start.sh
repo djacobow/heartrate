@@ -11,6 +11,8 @@ gunicorn \
    -b 127.0.0.1:8001 \
 
 
+# can start in background with -D 
+
 # now start the https terminator and reverse proxy nginx
 sudo nginx 
 # sudo nginx -s reload
