@@ -27,6 +27,8 @@ config = {
     }
 }
 
+if len(sys.argv) > 1:
+    config['serial']['port'] = sys.argv[1]
 
 def main():
     scanner = scan.SerialScanner(config['serial']['port'],
