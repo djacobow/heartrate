@@ -2,6 +2,8 @@
 import http.client
 import json
 
+debug = True
+
 class ServerPusher(object):
     def __init__(self, name, port, user):
         self.name = name
@@ -20,9 +22,13 @@ class ServerPusher(object):
                 print('port:' + str(self.port))
                 print('pdata:' + pdata)
             conn.request('POST', self.url, pdata, headers)
+            if debug:
+                print('Sent: ' + pdata)
             resp = conn.getresponse()
             if resp is not None:
                 rstr = resp.read().decode()
+                if debug:
+                    print('Received: ' + pdata)
                 rdata = None
                 try:
                     rdata = json.loads(rstr)
