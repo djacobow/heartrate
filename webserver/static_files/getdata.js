@@ -111,12 +111,15 @@ function arrangedata(data) {
 
     // now fill in with data, where available
     for (var ts in _dObj) {
-        if ((ts >= start_ts) && (ts <= end_ts)) {
+        if ((ts >= start_ts) && (ts < end_ts)) {
             var index = ts - start_ts + 1;
 	    for (var user in _dObj[ts]) {
                 for (var vn in _dObj[ts][user]) {
 		    varidx = vnames['hier'][user][vn] + 1;
-		    graph_data[index][varidx] = _dObj[ts][user][vn];
+                    var temp = _dObj[ts][user][vn];
+                    // console.log('index: ' + index);
+                    // console.log('varidx: ' + varidx);
+		    graph_data[index][varidx] = temp;
 		}
 	    }
 	}
