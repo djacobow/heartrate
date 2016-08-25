@@ -26,6 +26,9 @@ defaults = {
     }
 }
 
+if len(sys.argv) > 1:
+    defaults['serial_port'] = sys.argv[1]
+
 def getnow():
     return calendar.timegm(time.gmtime())
 

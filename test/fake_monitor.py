@@ -3,11 +3,13 @@
 import math
 import time
 import os
+import ssl
 import http.client
 import json
 import uuid
 import random
 
+use_local_server = False;
 
 count = 0
 res = 100
@@ -15,8 +17,9 @@ res = 100
 user = str(uuid.uuid4())
 twopi = 2 * 3.14159656358
 
-#host = 'localhost'
 host = '52.34.85.6'
+if use_local_server:
+    host = 'localhost'
 
 
 random.seed()
@@ -32,13 +35,21 @@ while True:
     a1 += phase1
 
     while a0 > twopi:
-	    a0 -= twopi
+        a0 -= twopi
     while a1 > twopi:
-	    a1 -= twopi
+        a1 -= twopi
     v0 = 50 + 50 * math.sin(a0)
     v1 = 50 + 25 * math.cos(a1)
 
-    conn = http.client.HTTPSConnection(host,8000)
+    conn = None
+    if use_local_server:
+        conn = http.client.HTTPConnection(host,8001)
+    else:
+        # this is a workaround for my homemade key file(s)
+        ctx = ssl.create_default_context(cafile='./davej.crt')
+        ctx.check_hostname = False
+        conn = http.client.HTTPSConnection(host,port=8000,context=ctx)
+
     data = { 'var1': v0 };
     if tcount > 10 and tcount < 40:
         data['var2'] = v1
