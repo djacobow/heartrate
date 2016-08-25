@@ -63,7 +63,7 @@ def main():
                 if datum['type'] == 'Q':
                     ibi = datum['value']
                     hr = math.floor((600000.0 / float(ibi)) + 0.5) / 10.0;
-                    print('Fancy rate: ' + str(hr))
+                    print('IBI-based Heartrate is: ' + str(hr))
             if logfile is not None:
                 if datum['type'] == 'B':
                     time = datetime.datetime.now().isoformat()
