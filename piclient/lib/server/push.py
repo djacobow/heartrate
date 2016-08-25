@@ -12,11 +12,13 @@ class ServerPusher(object):
         self.url = '/api/v1/users/' + user
 
     def push(self,data):
-        # workaround for the fact that the cert on my test server
-        # is self-signed and not matching to the hostname
-        ctx  = ssl.create_default_context(cafile='./davej.crt')
-        ctx.check_hostname = False
-        conn = http.client.HTTPSConnection(self.name,port=self.port,context=ctx)
+        if False:
+            # workaround for the fact that the cert on my test server
+            # is self-signed and not matching to the hostname
+            ctx  = ssl.create_default_context(cafile='./davej.crt')
+            ctx.check_hostname = False
+            conn = http.client.HTTPSConnection(self.name,port=self.port,context=ctx)
+        conn = http.client.HTTPSConnection(self.name,port=self.port)
         pdata = json.dumps(data)
         headers = { 'Content-type':'application/json'}
         rval = '???' 
@@ -31,9 +33,9 @@ class ServerPusher(object):
                 print('Sent: ' + pdata)
             resp = conn.getresponse()
             if resp is not None:
-                rstr = resp.read().decode()
+                rstr = resp.read().decode('utf-8')
                 if debug:
-                    print('Received: ' + resp)
+                    print('Received: ' + rstr)
                 rdata = None
                 try:
                     rdata = json.loads(rstr)
