@@ -9,6 +9,7 @@ gunicorn \
    app \
    -w 1 \
    -b 127.0.0.1:8001 \
+   -D
 
 
 # can start in background with -D 
