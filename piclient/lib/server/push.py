@@ -33,7 +33,7 @@ class ServerPusher(object):
             if resp is not None:
                 rstr = resp.read().decode()
                 if debug:
-                    print('Received: ' + pdata)
+                    print('Received: ' + resp)
                 rdata = None
                 try:
                     rdata = json.loads(rstr)
