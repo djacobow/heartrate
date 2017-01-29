@@ -9,35 +9,32 @@ import time
 import calendar
 import copy
 import math
+import yaml
 
 from lib.gui    import gui_form
 from lib.serial import scan 
 from lib.server import push 
 
-defaults = {
-    'wave_size': 128,
-    'user_name': 'bob',
-    'serial_port': '/dev/ttyACM0',
-    'serial_speed': 115200,
-    'server' : {
-        'name': '52.34.85.6',
-        'port' :8000,
-        'use': True,
-    }
-}
+defaults = None
+with open('config.json','r') as cfile:
+    try:
+        defaults = yaml.load(cfile)
+    except yaml.YAMLError as exc:
+        print(exc)
+
 
 if len(sys.argv) > 1:
-    defaults['serial_port'] = sys.argv[1]
+    defaults['shared']['serial']['port'] = sys.argv[1]
 
 def getnow():
     return calendar.timegm(time.gmtime())
 
 heart_state = {
     'wave' : {
-        'size' : defaults['wave_size'],
+        'size' : defaults['piclient_gui']['wave_size'],
         'curr' : 0,
-        'data' : [0] * defaults['wave_size'],
-        'stable_data' : [0] * defaults['wave_size'],
+        'data' : [0] * defaults['piclient_gui']['wave_size'],
+        'stable_data' : [0] * defaults['piclient_gui']['wave_size'],
     },
     'bpm' : {
         'last' : 0,
@@ -96,11 +93,11 @@ class MyApp(QtGui.QMainWindow,gui_form.Ui_MainWindow):
         self.QApp = QApp
         self.serial_scanner = None
         self.sender = None
-        self.nameLineEdit.insert(defaults['user_name'])
-        self.serialPortLineEdit.insert(defaults['serial_port'])
-        self.serverNameLineEdit.insert(defaults['server']['name'])
-        self.serverPortLineEdit.insert(str(defaults['server']['port']))
-        self.sendDataCheck.setChecked(defaults['server']['use'])
+        self.nameLineEdit.insert(defaults['shared']['server']['username'])
+        self.serialPortLineEdit.insert(defaults['shared']['serial']['port'])
+        self.serverNameLineEdit.insert(defaults['shared']['server']['name'])
+        self.serverPortLineEdit.insert(str(defaults['shared']['server']['port']))
+        self.sendDataCheck.setChecked(defaults['piclient_gui']['use_server'])
         sertimer.start(100)
         disptimer.start(2000)
 
@@ -112,7 +109,7 @@ class MyApp(QtGui.QMainWindow,gui_form.Ui_MainWindow):
         if self.serial_scanner is not None:
             del self.serial_scanner
             self.serial_scanner = None
-        self.serial_scanner = scan.SerialScanner(self.serialPortLineEdit.text(),defaults['serial_speed'])
+        self.serial_scanner = scan.SerialScanner(self.serialPortLineEdit.text(),defaults['shared']['serial']['speed'])
         if self.sender is not None:
             del self.sender
             self.sender = None

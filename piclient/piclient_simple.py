@@ -3,65 +3,57 @@
 import sys
 import datetime
 import math
+import yaml
 
 from lib.serial import scan
 from lib.server import push
 
-config = {
-    'serial': {
-        'port': '/dev/ttyACM0',
-        'speed': 115200,
-    },
-    'server': {
-        'name': '52.34.85.6',
-        'port': 8000,
-        'username': 'bob',
-    },
-    'logfilename': 'heartrate.log',
-    'todo': {
-        'show_raw_decoded': False,
-        'show_heartrate': False,
-        'show_better_heartrate': True,
-        'log_heartrate': False,
-        'send_heartrate': False,
-    }
-}
+config = None 
+
+with open('config.json','r') as cfile:
+    try:
+        config = yaml.load(cfile)
+    except yaml.YAMLError as exc:
+        print(exc)
+
+print(config)
+
 
 if len(sys.argv) > 1:
-    config['serial']['port'] = sys.argv[1]
+    config['shared']['serial']['port'] = sys.argv[1]
 
 def main():
-    scanner = scan.SerialScanner(config['serial']['port'],
-                                 config['serial']['speed'])
+    scanner = scan.SerialScanner(config['shared']['serial']['port'],
+                                 config['shared']['serial']['speed'])
 
     logfile = None
-    if config['todo']['log_heartrate']:
+    if config['piclient_simple']['todo']['log_heartrate']:
         try:
-            logfile = open(config['logfilename'],'a')
+            logfile = open(config['piclient_simple']['logfilename'],'a')
             logfile.write('time,heartrate\n')
         except:
             print('Could not open logfile.')
             return
 
     sender = None
-    if config['todo']['send_heartrate']:
-        sender = push.ServerPusher(config['server']['name'],
-                                     config['server']['port'],
-                                     config['server']['username'])
+    if config['piclient_simple']['todo']['send_heartrate']:
+        sender = push.ServerPusher(config['shared']['server']['name'],
+                                     config['shared']['server']['port'],
+                                     config['shared']['server']['username'])
     while True:
         data = scanner.scan()
 
         for datum in data:
-            if config['todo']['show_raw_decoded']:
+            if config['piclient_simple']['todo']['show_raw_decoded']:
                 print('datum received:')
                 print(datum)
 
-            if config['todo']['show_heartrate']:
+            if config['piclient_simple']['todo']['show_heartrate']:
                 if datum['type'] == 'B':
                     print('Heartrate is: ' + str(datum['value']) +
                             ' BPM')
 
-            if config['todo']['show_better_heartrate']:
+            if config['piclient_simple']['todo']['show_better_heartrate']:
                 if datum['type'] == 'Q':
                     ibi = datum['value']
                     hr = math.floor((600000.0 / float(ibi)) + 0.5) / 10.0;
