@@ -1,0 +1,27 @@
+{
+    "shared": {
+        "serial": {
+            "port": "/dev/ttyUSB0",
+            "speed": 115200
+        },
+        "server" : {
+            "username": "bob",
+            "name": "52.34.85.6",
+            "port" :8000
+        }
+    },
+    "piclient_gui": {
+        "wave_size": 128,
+        "use_server": true
+    },
+    "piclient_simple": {
+        "logfilename": "heartrate.log",
+        "todo": {
+            "show_raw_decoded": false,
+            "show_heartrate": false,
+            "show_better_heartrate": true,
+            "log_heartrate": false,
+            "send_heartrate": true
+        }
+    }
+}  
